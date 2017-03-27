@@ -9,9 +9,17 @@ app.use(express.static('public'));
 app.use(express.static('images'));
 
 let images = [];
-let currentImage = -1;
+fs.readdir('images', function (err, files) {
+  if (err) {
+    console.log(err);
+    return;
+  }
 
-const readImages = function () {
+  images = files;
+});
+
+fs.watch('images', function (eventType, filename) {
+  /* ignore the event and read the dir */
   fs.readdir('images', function (err, files) {
     if (err) {
       console.log(err);
@@ -19,15 +27,8 @@ const readImages = function () {
     }
 
     images = files;
-    currentImage = images.length > 0 ?  0 : -1;
+    io.emit('images', images);
   });
-};
-
-readImages();
-
-fs.watch('images', function (eventType, filename) {
-  /* ignore the event and read the dir */
-  readImages();
 });
 
 server.listen(3000, function () {
@@ -38,11 +39,6 @@ app.get('/', function (req, res) {
   res.sendfile('index.html');
 });
 
-setInterval(function () {
-  if (currentImage < 0) {
-    io.emit('image', { index: currentImage });
-  } else {
-    io.emit('image', { index: currentImage, image: images[currentImage] });
-    currentImage = (currentImage+1) % images.length;
-  }
-}, 3000);
+io.on('connection', function (socket) {
+  socket.emit('images', images);
+});

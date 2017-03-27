@@ -7,17 +7,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SlideShow</title>
 
+    <script src="jquery-3.2.0.min.js"></script>
+
     <script src="/socket.io/socket.io.js"></script>
+
+    <link rel="stylesheet" href="style.css">
   </head>
 
   <body>
-    <h1>Slide Show</h1>
+    <h1 class="center-align">ISISS MATESE</h1>
+
+    <div class="carousel"></div>
 
     <script>
     const socket = io.connect('http://172.17.0.2:3000');
-    socket.on('image', function (data) {
-      console.log(data);
-    })
+
+    let images = [];
+    let currentImage = -1;
+
+    socket.on('images', function (data) {
+      images = data;
+      currentImage = images.length > 0 ? 0 : -1;
+    });
+
+    setInterval(function () {
+      if (images.length > 0) currentImage = (currentImage+1) % images.length;
+      else currentImage = -1;
+
+      if (currentImage >= 0) {
+        $('.carousel').addClass('animate');
+        $('.carousel').css('background-image', "url("+images[currentImage]+")");
+        setTimeout( function () {
+          $('.carousel').removeClass('animate');
+        }, 2000);
+      }
+    }, 7000);
     </script>
   </body>
 </html>
