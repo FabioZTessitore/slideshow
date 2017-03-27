@@ -8,7 +8,7 @@ const io = require('socket.io')(server);
 app.use(express.static('public'));
 app.use(express.static('images'));
 
-let images = [];
+var images = [];
 fs.readdir('images', function (err, files) {
   if (err) {
     console.log(err);

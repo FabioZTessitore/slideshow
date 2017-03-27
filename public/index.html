@@ -20,7 +20,7 @@
     <div class="carousel"></div>
 
     <script>
-    const socket = io.connect('http://172.17.0.2:3000');
+    const socket = io.connect('http://127.0.0.1:3000');
 
     let images = [];
     let currentImage = -1;
@@ -41,7 +41,7 @@
           $('.carousel').removeClass('animate');
         }, 2000);
       }
-    }, 7000);
+    }, 12000);
     </script>
   </body>
 </html>
