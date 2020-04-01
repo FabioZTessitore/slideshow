@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const fs = require('fs');
 
 const app = express();
@@ -8,6 +9,7 @@ const io = require('socket.io')(server);
 app.use(express.static('public'));
 app.use(express.static('images'));
 
+// carica le immagini alla partenza
 var images = [];
 fs.readdir('images', function (err, files) {
   if (err) {
@@ -18,6 +20,7 @@ fs.readdir('images', function (err, files) {
   images = files;
 });
 
+// rilegge la cartella immagini in casi di variazioni
 fs.watch('images', function (eventType, filename) {
   /* ignore the event and read the dir */
   fs.readdir('images', function (err, files) {
@@ -36,7 +39,7 @@ server.listen(3000, function () {
 });
 
 app.get('/', function (req, res) {
-  res.sendfile('index.html');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 io.on('connection', function (socket) {
